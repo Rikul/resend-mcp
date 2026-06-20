@@ -30,9 +30,9 @@ describe('createMcpServer', () => {
     expect(typeof server.connect).toBe('function');
   });
 
-  it('registers all 77 tools when tools is not specified', () => {
+  it('registers all 80 tools when tools is not specified', () => {
     const server = createMcpServer({} as Resend, { replierEmailAddresses: [] });
-    expect(toolNames(server)).toHaveLength(77);
+    expect(toolNames(server)).toHaveLength(80);
   });
 
   it('registers only the selected category', () => {

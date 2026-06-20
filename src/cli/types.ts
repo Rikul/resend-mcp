@@ -17,11 +17,7 @@ interface BaseConfig {
 export interface StdioConfig extends BaseConfig {
   apiKey: string;
   transport: 'stdio';
-<<<<<<< HEAD
-=======
-  port: number;
   tools: ToolCategory[];
->>>>>>> e757a90 (feat: add --tools param to filter registered tool categories)
 }
 
 /**
