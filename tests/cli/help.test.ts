@@ -10,6 +10,7 @@ describe('help', () => {
     expect(HELP_TEXT).toContain('--reply-to');
     expect(HELP_TEXT).toContain('--http');
     expect(HELP_TEXT).toContain('--port');
+    expect(HELP_TEXT).toContain('--tools');
     expect(HELP_TEXT).toContain('-h, --help');
     expect(HELP_TEXT).toContain('RESEND_API_KEY');
     expect(HELP_TEXT).toContain('MCP_PORT');

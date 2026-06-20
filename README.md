@@ -160,6 +160,7 @@ You can pass additional arguments to configure the server:
 - `--port`: HTTP port when using `--http` (default: 3000, or `MCP_PORT` env var)
 - `--host`: Host for DNS-rebinding protection when using `--http` (default: `127.0.0.1`, or `MCP_HOST`). Set to `0.0.0.0` to disable `Host` validation behind a proxy/load balancer.
 - `--allowed-hosts`: Comma-separated `Host` allow-list when using `--http` (or `MCP_ALLOWED_HOSTS`)
+- `--tools`: Comma-separated tool categories to enable, to reduce the number of tool definitions sent to the LLM. When omitted, all tools are enabled. Valid categories: `ApiKey`, `Automation`, `Broadcast`, `Contact`, `Domain`, `Editor`, `Email`, `Event`, `Log`, `Segment`, `Template`, `Topic`, `Webhook`. For example, `--tools Email,Contact` exposes only the email and contact tools.
 
 Environment variables:
 

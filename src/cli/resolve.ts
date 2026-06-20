@@ -1,4 +1,5 @@
 import type { ParsedArgs } from 'minimist';
+import { TOOL_CATEGORIES, type ToolCategory } from '../tools/categories.js';
 import { DEFAULT_HTTP_PORT } from './constants.js';
 import { parseAllowedHosts, parseReplierAddresses } from './parse.js';
 import type { ResolveResult } from './types.js';
@@ -30,6 +31,52 @@ function parsePort(parsed: ParsedArgs, env: NodeJS.ProcessEnv): number {
   return DEFAULT_HTTP_PORT;
 }
 
+type ToolsResult =
+  | { ok: true; tools: ToolCategory[] }
+  | { ok: false; error: string };
+
+/**
+ * Resolve enabled tool categories from `--tools`. No env support by design.
+ * Absent flag enables all categories. Names match case-insensitively and are
+ * normalized to canonical form; unknown names (or an empty value) are errors.
+ */
+function parseToolCategories(parsed: ParsedArgs): ToolsResult {
+  const raw = parsed.tools;
+  if (raw === undefined) return { ok: true, tools: [...TOOL_CATEGORIES] };
+
+  const values = (Array.isArray(raw) ? raw : [raw])
+    .flatMap((v) => String(v).split(','))
+    .map((s) => s.trim())
+    .filter(Boolean);
+
+  if (values.length === 0) {
+    return {
+      ok: false,
+      error: `--tools was provided but empty. Valid categories: ${TOOL_CATEGORIES.join(', ')}`,
+    };
+  }
+
+  const canonicalByLower = new Map<string, ToolCategory>(
+    TOOL_CATEGORIES.map((c) => [c.toLowerCase(), c]),
+  );
+  const selected = new Set<ToolCategory>();
+  const invalid: string[] = [];
+  for (const value of values) {
+    const canonical = canonicalByLower.get(value.toLowerCase());
+    if (canonical) selected.add(canonical);
+    else invalid.push(value);
+  }
+
+  if (invalid.length > 0) {
+    return {
+      ok: false,
+      error: `Invalid --tools value${invalid.length === 1 ? '' : 's'}: ${invalid.join(', ')}. Valid categories: ${TOOL_CATEGORIES.join(', ')}`,
+    };
+  }
+
+  return { ok: true, tools: [...selected] };
+}
+
 /**
  * Resolve config from parsed argv and env. No side effects, no exit.
  */
@@ -54,6 +101,11 @@ export function resolveConfig(
     };
   }
 
+  const tools = parseToolCategories(parsed);
+  if (!tools.ok) {
+    return { ok: false, error: tools.error };
+  }
+
   const senderEmailAddress =
     (typeof parsed.sender === 'string' ? parsed.sender : null) ??
     (typeof env.SENDER_EMAIL_ADDRESS === 'string'
@@ -66,6 +118,7 @@ export function resolveConfig(
     senderEmailAddress: senderEmailAddress ?? '',
     replierEmailAddresses: parseReplierAddresses(parsed, env),
     port,
+    tools: tools.tools,
   };
 
   return {

@@ -1,3 +1,5 @@
+import type { ToolCategory } from '../tools/categories.js';
+
 export type TransportMode = 'stdio' | 'http';
 
 /**
@@ -15,6 +17,11 @@ interface BaseConfig {
 export interface StdioConfig extends BaseConfig {
   apiKey: string;
   transport: 'stdio';
+<<<<<<< HEAD
+=======
+  port: number;
+  tools: ToolCategory[];
+>>>>>>> e757a90 (feat: add --tools param to filter registered tool categories)
 }
 
 /**
@@ -32,6 +39,7 @@ export interface HttpConfig extends BaseConfig {
   host?: string;
   /** Explicit allow-list of acceptable Host header hostnames. */
   allowedHosts?: string[];
+  tools: ToolCategory[];
 }
 
 export type CliConfig = StdioConfig | HttpConfig;

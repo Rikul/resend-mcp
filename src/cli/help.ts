@@ -15,6 +15,10 @@ Options:
   --host <host>            Host for DNS-rebinding protection (default: 127.0.0.1, or MCP_HOST).
                            Use 0.0.0.0 to disable Host validation behind a proxy/load balancer.
   --allowed-hosts <list>   Comma-separated Host allow-list (or MCP_ALLOWED_HOSTS)
+  --tools <categories>     Comma-separated tool categories to enable (default: all).
+                           One or more of: ApiKey, Automation, Broadcast, Contact,
+                           Domain, Editor, Email, Event, Log, Segment, Template,
+                           Topic, Webhook
   -h, --help               Show this help
 
 Environment:

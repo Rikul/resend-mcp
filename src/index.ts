@@ -12,6 +12,7 @@ const config = resolveConfigOrExit(parsed, process.env);
 const serverOptions = {
   senderEmailAddress: config.senderEmailAddress,
   replierEmailAddresses: config.replierEmailAddresses,
+  tools: config.tools,
 };
 
 function onFatal(err: unknown): void {

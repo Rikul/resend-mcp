@@ -172,4 +172,82 @@ describe('resolveConfig', () => {
     if (invalid.ok) expect(invalid.config.port).toBe(3000);
     if (outOfRange.ok) expect(outOfRange.config.port).toBe(3000);
   });
+
+  describe('--tools', () => {
+    it('enables all categories when --tools not provided', () => {
+      const result = resolveConfig(parseArgs(['--key', 're_x']), {});
+      expect(result.ok).toBe(true);
+      if (result.ok) {
+        expect(result.config.tools).toEqual([
+          'ApiKey',
+          'Automation',
+          'Broadcast',
+          'Contact',
+          'Domain',
+          'Editor',
+          'Email',
+          'Event',
+          'Log',
+          'Segment',
+          'Template',
+          'Topic',
+          'Webhook',
+        ]);
+      }
+    });
+
+    it('resolves a comma-separated subset', () => {
+      const result = resolveConfig(
+        parseArgs(['--key', 're_x', '--tools', 'Email,Contact']),
+        {},
+      );
+      expect(result.ok).toBe(true);
+      if (result.ok) expect(result.config.tools).toEqual(['Email', 'Contact']);
+    });
+
+    it('matches category names case-insensitively, normalizing to canonical', () => {
+      const result = resolveConfig(
+        parseArgs(['--key', 're_x', '--tools', 'email,APIKEY']),
+        {},
+      );
+      expect(result.ok).toBe(true);
+      if (result.ok) expect(result.config.tools).toEqual(['Email', 'ApiKey']);
+    });
+
+    it('merges and de-dupes repeated --tools flags and empty entries', () => {
+      const result = resolveConfig(
+        parseArgs([
+          '--key',
+          're_x',
+          '--tools',
+          'Email,,Email',
+          '--tools',
+          'Log',
+        ]),
+        {},
+      );
+      expect(result.ok).toBe(true);
+      if (result.ok) expect(result.config.tools).toEqual(['Email', 'Log']);
+    });
+
+    it('errors on an unknown category', () => {
+      const result = resolveConfig(
+        parseArgs(['--key', 're_x', '--tools', 'Email,Bogus']),
+        {},
+      );
+      expect(result.ok).toBe(false);
+      if (!result.ok) {
+        expect(result.error).toContain('Bogus');
+        expect(result.error).toContain('Valid categories');
+      }
+    });
+
+    it('errors when --tools is provided but empty', () => {
+      const result = resolveConfig(
+        parseArgs(['--key', 're_x', '--tools', '  ']),
+        {},
+      );
+      expect(result.ok).toBe(false);
+    });
+  });
 });

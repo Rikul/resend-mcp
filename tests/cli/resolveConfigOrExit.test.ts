@@ -55,8 +55,33 @@ describe('resolveConfigOrExit', () => {
       replierEmailAddresses: [],
       transport: 'stdio',
       port: 3000,
+      tools: [
+        'ApiKey',
+        'Automation',
+        'Broadcast',
+        'Contact',
+        'Domain',
+        'Editor',
+        'Email',
+        'Event',
+        'Log',
+        'Segment',
+        'Template',
+        'Topic',
+        'Webhook',
+      ],
     });
     expect(exitSpy).not.toHaveBeenCalled();
+  });
+
+  it('calls process.exit(1) and console.error when --tools is invalid', () => {
+    const parsed = parseArgs(['--key', 're_abc', '--tools', 'Bogus']);
+    expect(() => resolveConfigOrExit(parsed, {})).toThrow();
+    expect(exitSpy).toHaveBeenCalledWith(1);
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      'Error:',
+      expect.stringContaining('Invalid --tools'),
+    );
   });
 
   it('returns config with transport http and port when --http', () => {

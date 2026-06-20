@@ -49,6 +49,16 @@ describe('parseArgs', () => {
     const parsed = parseArgs(['--port', '8080']);
     expect(parsed.port).toBe('8080');
   });
+
+  it('parses --tools as a string', () => {
+    const parsed = parseArgs(['--tools', 'Email,Contact']);
+    expect(parsed.tools).toBe('Email,Contact');
+  });
+
+  it('parses repeated --tools into an array', () => {
+    const parsed = parseArgs(['--tools', 'Email', '--tools', 'Contact']);
+    expect(parsed.tools).toEqual(['Email', 'Contact']);
+  });
 });
 
 describe('parseReplierAddresses', () => {
